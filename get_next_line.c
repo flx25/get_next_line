@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/06 14:46:37 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/06 14:49:47 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	*findnewline(char *out, int i)
+char	*transfer(char *out, int i)
 {
 	char	*newout;
-	int 	c;
+	int		c;
 
 	c = 0;
 
@@ -58,7 +58,7 @@ char	*get_next_line(int fd)
 	out = calloc(50, sizeof(char));
 	if (checknl(out) == 0)
 		read(fd, out, BUFFER_SIZE);
-	return (findnewline(out, i));
+	return (transfer(out, i));
 }
 
 int	main(void)
