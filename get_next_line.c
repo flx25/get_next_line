@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/07 11:36:57 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 13:36:15 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ int	checknl(char *out, int i, int *ptransfersize)
 		*ptransfersize = i;
 		return (1);
 	}
+	if (out[i] != '\n' && i == 0)
+		return (-1);
 	else
 		return (0);
 }
@@ -94,24 +96,28 @@ int	checknl(char *out, int i, int *ptransfersize)
 char	*get_next_line(int fd)
 {
 	static char		*whole;
-	char			*temp;
+	char			temp[BUFFER_SIZE];
 	static int		i;
 	int				transfersize;
+	int				readnull;
 
 	transfersize = 0;
 
-	temp = malloc(BUFFER_SIZE * sizeof(char));
 	if (i == 0)
 	{
 		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
 		whole[BUFFER_SIZE] = '\0';
+		if (read(fd, whole, BUFFER_SIZE) <= 0)
+		{
+			free(whole);
+			return (NULL);
+		}
 	}
 	while (checknl(whole, i, &transfersize) == 0)
 	{
-		read(fd, temp, BUFFER_SIZE);
+		readnull = read(fd, temp, BUFFER_SIZE);
 		whole = ft_strjoin(whole, temp);
 	}
-	free(temp);
 	return (transfer(whole, &i, transfersize));
 
 }
