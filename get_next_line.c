@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/06 14:49:47 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 09:30:38 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+int	ft_strlen(const char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+	i++;
+	}
+	return (i);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*out;
+	int		i;
+	int		j;
+
+	out = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (out == NULL)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (i < ft_strlen(s1))
+	{
+	out[j] = s1[i];
+	i++;
+	j++;
+	}
+	i = 0;
+	while (i < ft_strlen(s2))
+	{
+	out[j] = s2[i];
+	i++;
+	j++;
+	}
+	out[j] = '\0';
+	return (out);
+}
+
 
 char	*transfer(char *out, int i)
 {
@@ -39,7 +80,6 @@ int	checknl(char *out)
 	int	i;
 
 	i = 0;
-
 	while (out[i] != '\n' && out[i] != '\0')
 	{
 		i++;
@@ -52,19 +92,27 @@ int	checknl(char *out)
 
 char	*get_next_line(int fd)
 {
-	char		*out;
+	char		*whole;
+	char		*temp;
 	static int	i;
 
-	out = calloc(50, sizeof(char));
-	if (checknl(out) == 0)
-		read(fd, out, BUFFER_SIZE);
-	return (transfer(out, i));
+	temp = malloc(BUFFER_SIZE * sizeof(char));
+	if (i == 0)
+	{
+		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
+		whole[BUFFER_SIZE] = '\0';
+		read(fd, whole, BUFFER_SIZE);
+	}
+	if (i != 0 && checknl(whole) == 0)
+	read(fd, temp, BUFFER_SIZE);
+	whole = ft_strjoin(whole, temp);
+	free(temp);
+	return (transfer(whole, i));
 }
 
 int	main(void)
 {
-
-	int	fd_to_read;
+	int		fd_to_read;
 	char	*out;
 
 	fd_to_read = open("Testtext.txt", O_RDONLY);
