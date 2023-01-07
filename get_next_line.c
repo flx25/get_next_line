@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/07 13:36:15 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 14:17:59 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,42 +95,54 @@ int	checknl(char *out, int i, int *ptransfersize)
 
 char	*get_next_line(int fd)
 {
-	static char		*whole;
-	char			temp[BUFFER_SIZE];
+	char			*whole;
+	char			temp[BUFFER_SIZE + 1];
 	static int		i;
 	int				transfersize;
-	int				readnull;
+	int				readstat;
 
-	transfersize = 0;
-
-	if (i == 0)
+	whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
+	readstat =  read(fd, temp, BUFFER_SIZE);
+	if (readstat <= 0)
 	{
-		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
-		whole[BUFFER_SIZE] = '\0';
-		if (read(fd, whole, BUFFER_SIZE) <= 0)
+		free(whole);
+		return (NULL);
+	}
+	else if (readstat < BUFFER_SIZE)
+	{
+		free(whole);
+		temp[BUFFER_SIZE] = '\0';
+		checknl(temp, i, &transfersize);
+		return (transfer(temp, &i, transfersize));
+	}
+	else
+	{
+	whole = ft_strjoin(whole, temp);
+		while (checknl(whole, i, &transfersize) == 0)
 		{
-			free(whole);
-			return (NULL);
+			readstat = read(fd, temp, BUFFER_SIZE);
+			if (readstat < BUFFER_SIZE && readstat != 0)
+			{
+				whole = ft_strjoin(whole, temp);
+				break ;
+			}
+			else if (readstat == 0)
+				break ;
+			whole = ft_strjoin(whole, temp);
 		}
+		return (transfer(whole, &i, transfersize));
 	}
-	while (checknl(whole, i, &transfersize) == 0)
-	{
-		readnull = read(fd, temp, BUFFER_SIZE);
-		whole = ft_strjoin(whole, temp);
-	}
-	return (transfer(whole, &i, transfersize));
-
 }
 
-// int	main(void)
-// {
-// 	int		fd_to_read;
-// 	char	*out;
+int	main(void)
+{
+	int		fd_to_read;
+	char	*out;
 
-// 	fd_to_read = open("Testtext.txt", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// }
+	fd_to_read = open("Testtext.txt", O_RDONLY);
+	out = get_next_line(fd_to_read);
+	printf("%s", out);
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+}
