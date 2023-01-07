@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/07 10:04:42 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 10:52:19 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (out);
 }
 
-char	*transfer(char *out, int *pi)
+char	*transfer(char *out, int *pi, int transfersize)
 {
 	char	*newout;
 	int		c;
@@ -64,7 +64,7 @@ char	*transfer(char *out, int *pi)
 
 	i = pi;
 	c = 0;
-	newout = malloc(50 * sizeof(char)); // adapt this size
+	newout = malloc(transfersize * sizeof(char));
 	while (out[*i] != '\n' )
 	{
 		newout[c] = out[*i];
@@ -76,14 +76,17 @@ char	*transfer(char *out, int *pi)
 	return (newout);
 }
 
-int	checknl(char *out, int i)
+int	checknl(char *out, int i, int *ptransfersize)
 {
 	while (out[i] != '\n' && out[i] != '\0')
 	{
 		i++;
 	}
 	if (out[i] == '\n')
+	{
+		*ptransfersize = i;
 		return (1);
+	}
 	else
 		return (0);
 }
@@ -93,6 +96,7 @@ char	*get_next_line(int fd)
 	static char		*whole;
 	char			*temp;
 	static int		i;
+	int				transfersize;
 
 	temp = malloc(BUFFER_SIZE * sizeof(char));
 	if (i == 0)
@@ -101,24 +105,24 @@ char	*get_next_line(int fd)
 		whole[BUFFER_SIZE] = '\0';
 		read(fd, whole, BUFFER_SIZE);
 	}
-	if (i != 0 && checknl(whole, i) == 0)
+	while (i != 0 && checknl(whole, i, &transfersize) == 0)
 	{
 		read(fd, temp, BUFFER_SIZE);
 		whole = ft_strjoin(whole, temp);
 		free(temp);
 	}
-	return (transfer(whole, &i));
+	return (transfer(whole, &i, transfersize));
 }
 
-// int	main(void)
-// {
-// 	int		fd_to_read;
-// 	char	*out;
+int	main(void)
+{
+	int		fd_to_read;
+	char	*out;
 
-// 	fd_to_read = open("Testtext.txt", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// }
+	fd_to_read = open("Testtext.txt", O_RDONLY);
+	out = get_next_line(fd_to_read);
+	printf("%s", out);
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+}

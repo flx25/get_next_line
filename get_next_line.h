@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:43:40 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/07 10:06:49 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 10:49:42 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 # define GET_NEXT_LINE_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 42
+#  define BUFFER_SIZE 1
 # endif
 
 char	*get_next_line(int fd);
 int		ft_strlen(const char *str);
 char	*ft_strjoin(char const *s1, char const *s2);
-char	*transfer(char *out, int *pi);
-int		checknl(char *out, int i);
+char	*transfer(char *out, int *pi, int transfersize);
+int		checknl(char *out, int i, int *ptransfersize);
 
 #endif
