@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/07 09:30:38 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/07 09:58:08 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,29 +57,30 @@ char	*ft_strjoin(char const *s1, char const *s2)
 }
 
 
-char	*transfer(char *out, int i)
+char	*transfer(char *out, int *pi)
 {
 	char	*newout;
 	int		c;
+	int		*i;
+
+	i = pi;
 
 	c = 0;
 
 	newout = malloc(50 * sizeof(char));
-	while (out[i] != '\n' )
+	while (out[*i] != '\n' )
 	{
-		newout[c] = out[i];
-		i++;
+		newout[c] = out[*i];
+		(*i)++;
 		c++;
 	}
-	newout[c] = out[i];
+	newout[c] = out[*i];
+	(*i)++;
 	return (newout);
 }
 
-int	checknl(char *out)
+int	checknl(char *out, int i)
 {
-	int	i;
-
-	i = 0;
 	while (out[i] != '\n' && out[i] != '\0')
 	{
 		i++;
@@ -92,7 +93,7 @@ int	checknl(char *out)
 
 char	*get_next_line(int fd)
 {
-	char		*whole;
+	static char		*whole;
 	char		*temp;
 	static int	i;
 
@@ -103,11 +104,14 @@ char	*get_next_line(int fd)
 		whole[BUFFER_SIZE] = '\0';
 		read(fd, whole, BUFFER_SIZE);
 	}
-	if (i != 0 && checknl(whole) == 0)
-	read(fd, temp, BUFFER_SIZE);
-	whole = ft_strjoin(whole, temp);
-	free(temp);
-	return (transfer(whole, i));
+	if (i != 0 && checknl(whole, i) == 0)
+	{
+		read(fd, temp, BUFFER_SIZE);
+		whole = ft_strjoin(whole, temp);
+		free(temp);
+	}
+
+	return (transfer(whole, &i));
 }
 
 int	main(void)
