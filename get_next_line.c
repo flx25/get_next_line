@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/09 12:44:03 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/09 13:30:13 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+
+void	*ft_memset(void *s, int c, size_t n)
+{
+	unsigned char	*p;
+
+	p = s;
+	while (n--)
+	{
+		*p++ = (unsigned char) c;
+	}
+	return (s);
+}
+
 
 int	ft_strlen(const char *str)
 {
@@ -76,7 +90,6 @@ char	*transfer(char *out, int *pi, int transfersize)
 		(*i)++;
 		c++;
 	}
-
 	return (newout);
 }
 
@@ -105,8 +118,10 @@ char	*get_next_line(int fd)
 	static int		i;
 	int				transfersize;
 	int				readstat;
+	char			*out;
 
-	if(!whole)
+	ft_memset(temp, '\0', BUFFER_SIZE + 1);
+	if (!whole)
 		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
 	readstat = read(fd, temp, BUFFER_SIZE);
 	if (readstat <= 0 && checknl(whole, i, &transfersize) == 0 && checknl(temp, i, &transfersize) == 0
@@ -132,10 +147,16 @@ char	*get_next_line(int fd)
 				break ;
 			}
 			else if (readstat == 0)
-				break ;
+			{
+				free(whole) ;
+				break;
+			}
+
 			whole = ft_strjoin(whole, temp);
 		}
-		return (transfer(whole, &i, transfersize));
+		out = (transfer(whole, &i, transfersize));
+		free(whole);
+		return (out);
 	}
 }
 
