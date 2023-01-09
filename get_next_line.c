@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/09 10:31:58 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/09 10:57:08 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ char	*get_next_line(int fd)
 	else
 	{
 	whole = ft_strjoin(whole, temp);
-		while (checknl(whole, 0, &transfersize) == 0 && readstat == BUFFER_SIZE)
+		while (checknl(whole, i, &transfersize) == 0 && readstat == BUFFER_SIZE)
 		{
 			readstat = read(fd, temp, BUFFER_SIZE);
 			if (readstat < BUFFER_SIZE && readstat != 0)
