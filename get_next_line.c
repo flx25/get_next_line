@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/09 11:20:32 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/09 12:44:03 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*transfer(char *out, int *pi, int transfersize)
 	i = pi;
 	c = 0;
 	end = transfersize - *i;
-	newout = malloc(transfersize * sizeof(char));
+	newout = malloc(transfersize + 1 * sizeof(char));
 	while (c < end)
 	{
 		newout[c] = out[*i];
@@ -111,8 +111,10 @@ char	*get_next_line(int fd)
 	readstat = read(fd, temp, BUFFER_SIZE);
 	if (readstat <= 0 && checknl(whole, i, &transfersize) == 0 && checknl(temp, i, &transfersize) == 0
 		&& i == ft_strlen(temp))
+	{
+		free(whole);
 		return (NULL);
-
+	}
 	else if (readstat < BUFFER_SIZE)
 	{
 		checknl(temp, i, &transfersize);
@@ -137,15 +139,15 @@ char	*get_next_line(int fd)
 	}
 }
 
-int	main(void)
-{
-	int		fd_to_read;
-	char	*out;
+// int	main(void)
+// {
+// 	int		fd_to_read;
+// 	char	*out;
 
-	fd_to_read = open("Testtext.txt", O_RDONLY);
-	out = get_next_line(fd_to_read);
-	printf("%s", out);
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-}
+// 	fd_to_read = open("Testtext.txt", O_RDONLY);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// }
