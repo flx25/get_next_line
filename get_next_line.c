@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/09 10:57:08 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/09 11:20:32 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ char	*transfer(char *out, int *pi, int transfersize)
 	int		*i;
 	int		end;
 
-	if (transfersize == 0)
+	if (transfersize <= 0)
 		transfersize = ft_strlen(out);
 
 	i = pi;
@@ -92,7 +92,10 @@ int	checknl(char *out, int i, int *ptransfersize)
 		return (1);
 	}
 	else
+	{
+		*ptransfersize = ft_strlen(out);
 		return (0);
+	}
 }
 
 char	*get_next_line(int fd)
@@ -106,7 +109,8 @@ char	*get_next_line(int fd)
 	if(!whole)
 		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
 	readstat = read(fd, temp, BUFFER_SIZE);
-	if (readstat <= 0 && checknl(whole, i, &transfersize) == 0 && checknl(temp, i, &transfersize) == 0)
+	if (readstat <= 0 && checknl(whole, i, &transfersize) == 0 && checknl(temp, i, &transfersize) == 0
+		&& i == ft_strlen(temp))
 		return (NULL);
 
 	else if (readstat < BUFFER_SIZE)
