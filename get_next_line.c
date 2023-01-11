@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/09 13:41:07 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/11 14:12:40 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,13 @@
 #include <unistd.h>
 #include <string.h>
 
-void	*ft_memset(void *s, int c, size_t n)
-{
-	unsigned char	*p;
-
-	p = s;
-	while (n--)
-	{
-		*p++ = (unsigned char) c;
-	}
-	return (s);
-}
-
-
 int	ft_strlen(const char *str)
 {
 	int	i;
 
 	i = 0;
+	if (!str)
+		return (0x0);
 	while (str[i] != '\0')
 	{
 	i++;
@@ -70,105 +59,121 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (out);
 }
 
-char	*transfer(char *out, int *pi, int transfersize)
+char	*ft_strchr(char *c, int i)
 {
-	char	*newout;
-	int		c;
-	int		*i;
-	int		end;
+	int	j;
 
-	if (transfersize <= 0)
-		transfersize = ft_strlen(out);
-
-	i = pi;
-	c = 0;
-	end = transfersize - *i;
-	newout = malloc(transfersize + 1 * sizeof(char));
-	while (c < end)
+	j = 0;
+	if (!c)
+		return (NULL);
+	if (i == '\0')
+		return ((char *)&c[ft_strlen(c)]);
+	while (c[j] != '\0')
 	{
-		newout[c] = out[*i];
-		(*i)++;
-		c++;
+		if (c[j] == (char) i)
+			return ((char *)&c[j]);
+		j++;
 	}
-	return (newout);
+	return (NULL);
 }
 
-int	checknl(char *out, int i, int *ptransfersize)
+char	*ft_read(int fd, char *str)
 {
-	while (i < ft_strlen(out) && out[i] != '\n')
+	int		i;
+	char	temp[BUFFER_SIZE + 1];
+
+	while (!ft_strchr(str, '\n') && i != 0)
 	{
+		i = read(fd, temp, BUFFER_SIZE);
+		if (i == -1)
+			return (NULL);
+		temp[i] = '\0';
+		str = ft_strjoin(str, temp);
+	}
+	return (str);
+}
+
+char	*ft_getline(char *str)
+{
+	int		i;
+	int		j;
+	char	*out;
+	int		end;
+
+	i = 0;
+	j = 0;
+	if (!str)
+	{
+		free(str);
+		return (NULL);
+	}
+	while (str[i] && str[i] != '\n')
+		i++;
+	out = malloc((i + 2) * sizeof(char));
+	end = i;
+	i = 0;
+	while (i <= end)
+	{
+		out[i] = str[i];
 		i++;
 	}
-	if (i < ft_strlen(out) && out[i] == '\n')
+	return (out);
+}
+
+char	*ft_getrest(char *str)
+{
+	int		i;
+	int		j;
+	char	*out;
+
+	i = 0;
+	j = 0;
+	while (str[i] && str[i] != '\n')
+		i++;
+	if (!str[i])
 	{
-		*ptransfersize = i + 1;
-		return (1);
+		free(str);
+		return (NULL);
 	}
-	else
+	out = malloc(((ft_strlen(str) - i) + 1) * sizeof(char));
+	if (!out)
+		return (NULL);
+	i++;
+	while (str[i])
 	{
-		*ptransfersize = ft_strlen(out);
-		return (0);
+		out[j] = str[i];
+		j++;
+		i++;
 	}
+	out[j] = '\0';
+	return (out);
 }
 
 char	*get_next_line(int fd)
 {
-	static char		*whole;
-	static char		temp[BUFFER_SIZE + 1];
-	static int		i;
-	int				transfersize;
-	int				readstat;
-	char			*out;
+	static char	*str;
+	char		*line;
 
-	ft_memset(temp, '\0', BUFFER_SIZE + 1);
-	if (!whole)
-		whole = malloc(BUFFER_SIZE + 1 * sizeof(char));
-	readstat = read(fd, temp, BUFFER_SIZE);
-	if (readstat <= 0 && checknl(whole, i, &transfersize) == 0 && checknl(temp, i, &transfersize) == 0
-		&& i == ft_strlen(temp))
+	str = ft_read(fd, str);
+	if (!str)
 	{
-		free(whole);
+		free(str);
 		return (NULL);
 	}
-	else if (readstat < BUFFER_SIZE)
-	{
-		checknl(temp, i, &transfersize);
-		return (transfer(temp, &i, transfersize));
-	}
-	else
-	{
-	whole = ft_strjoin(whole, temp);
-		while (checknl(whole, i, &transfersize) == 0 && readstat == BUFFER_SIZE)
-		{
-			readstat = read(fd, temp, BUFFER_SIZE);
-			if (readstat < BUFFER_SIZE && readstat != 0)
-			{
-				whole = ft_strjoin(whole, temp);
-				break ;
-			}
-			else if (readstat == 0)
-			{
-				free(whole) ;
-				break;
-			}
-
-			whole = ft_strjoin(whole, temp);
-		}
-		out = (transfer(whole, &i, transfersize));
-		free(whole);
-		return (out);
-	}
+	line = ft_getline(str);
+	str = ft_getrest(str);
 }
 
-// int	main(void)
-// {
-// 	int		fd_to_read;
-// 	char	*out;
+int	main(void)
+{
+	int		fd_to_read;
+	char	*out;
 
-// 	fd_to_read = open("Testtext.txt", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// }
+	fd_to_read = open("Testtext.txt", O_RDONLY);
+	out = get_next_line(fd_to_read);
+	printf("%s", out);
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	close(fd_to_read);
+}
