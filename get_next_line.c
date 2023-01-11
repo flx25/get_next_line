@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/11 14:41:53 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/11 16:03:35 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,27 @@ char	*ft_strchr(char *c, int i)
 	return (NULL);
 }
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	if (!s1 || !s2)
+		return (0);
+	while (s1[i] != '\0' && s2[i] != '\0'
+		&& s1[i] == s2[i])
+	{
+	i++;
+	}
+	return ((unsigned char) s1[i] - (unsigned char) s2[i]);
+}
+
 char	*ft_read(int fd, char *str)
 {
 	int		i;
 	char	temp[BUFFER_SIZE + 1];
 
+	i = 1;
 	while (!ft_strchr(str, '\n') && i != 0)
 	{
 		i = read(fd, temp, BUFFER_SIZE);
@@ -156,6 +172,8 @@ char	*get_next_line(int fd)
 	static char	*str;
 	char		*line;
 
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	str = ft_read(fd, str);
 	if (!str)
 	{
@@ -164,6 +182,8 @@ char	*get_next_line(int fd)
 	}
 	line = ft_getline(str);
 	str = ft_getrest(str);
+	if (!ft_strcmp(line, str))
+		free(str);
 	return (line);
 }
 
@@ -172,7 +192,7 @@ char	*get_next_line(int fd)
 // 	int		fd_to_read;
 // 	char	*out;
 
-// 	fd_to_read = open("Testtext.txt", O_RDONLY);
+// 	fd_to_read = open("read_error.txt", O_RDONLY);
 // 	out = get_next_line(fd_to_read);
 // 	printf("%s", out);
 // 	printf("%s", get_next_line(fd_to_read));
