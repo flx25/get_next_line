@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/11 14:12:40 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/11 14:41:53 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*out;
 	int		i;
@@ -56,6 +56,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	j++;
 	}
 	out[j] = '\0';
+	free(s1);
 	return (out);
 }
 
@@ -96,27 +97,27 @@ char	*ft_read(int fd, char *str)
 char	*ft_getline(char *str)
 {
 	int		i;
-	int		j;
 	char	*out;
-	int		end;
 
 	i = 0;
-	j = 0;
-	if (!str)
-	{
-		free(str);
+	if (!str[i])
 		return (NULL);
-	}
+
 	while (str[i] && str[i] != '\n')
 		i++;
 	out = malloc((i + 2) * sizeof(char));
-	end = i;
 	i = 0;
-	while (i <= end)
+	while (str[i] && str[i] != '\n')
 	{
 		out[i] = str[i];
 		i++;
 	}
+	if (str[i] == '\n')
+	{
+		out[i] = str[i];
+		i++;
+	}
+	out[i] = '\0';
 	return (out);
 }
 
@@ -146,6 +147,7 @@ char	*ft_getrest(char *str)
 		i++;
 	}
 	out[j] = '\0';
+	free(str);
 	return (out);
 }
 
@@ -162,18 +164,19 @@ char	*get_next_line(int fd)
 	}
 	line = ft_getline(str);
 	str = ft_getrest(str);
+	return (line);
 }
 
-int	main(void)
-{
-	int		fd_to_read;
-	char	*out;
+// int	main(void)
+// {
+// 	int		fd_to_read;
+// 	char	*out;
 
-	fd_to_read = open("Testtext.txt", O_RDONLY);
-	out = get_next_line(fd_to_read);
-	printf("%s", out);
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	close(fd_to_read);
-}
+// 	fd_to_read = open("Testtext.txt", O_RDONLY);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	close(fd_to_read);
+// }
