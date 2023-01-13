@@ -65,6 +65,24 @@ char	*ft_strchr(char *c, int i)
 	return (NULL);
 }
 
+size_t	ft_strchridx(char *c, int i)
+{
+	size_t	j;
+
+	j = 0;
+	if (!c)
+		return (NULL);
+	if (i == '\0')
+		return (ft_strlen(c));
+	while (c[j] != '\0')
+	{
+		if (c[j] == (char) i)
+			return (j);
+		j++;
+	}
+	return (NULL);
+}
+
 int	ft_strcmp(char *s1, char *s2)
 {
 	int	i;
@@ -121,7 +139,8 @@ char	*ft_realloc(char *str, int size)
 
 char	*ft_readandsearch(int fd, char *buffer, char *line)
 {
-	int	readstat;
+	int		readstat;
+	size_t	*index;
 
 	readstat = 1;
 	if (ft_strlen(buffer) == NULL) //maybe edit
@@ -132,9 +151,11 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 		line = ft_realloc(line, strlen(line + BUFFER_SIZE + 1));
 		ft_memmove(line + strlen(line), buffer, strlen(buffer));
 	}
-		if(ft_strchr(buffer, '\n'))
+
+		if((index = ft_strchridx(buffer, '\n')))
 		{
-			memmove(line + ft_strlen(line), buffer, (size_t) (ft_strchr(buffer, '\n') - buffer));
+			ft_memmove(line + ft_strlen(line), buffer, size_t(index - buffer)); // copy until \n to line
+			ft_memmove(buffer, buffer + index, ft_strlen(buffer) - index);	//copy rest of buffer to the beginning of buffer
 		}
 }
 
