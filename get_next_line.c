@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/11 16:03:35 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/14 13:13:36 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,37 @@ int	ft_strcmp(char *s1, char *s2)
 	return ((unsigned char) s1[i] - (unsigned char) s2[i]);
 }
 
+size_t	ft_strlcat(char *dst, const char *src, size_t size)
+{
+	size_t	srclength;
+	size_t	i;
+	size_t	dstlength;
+
+	srclength = ft_strlen(src);
+	dstlength = ft_strlen(dst);
+	i = 0;
+	if (size == 0)
+		return (srclength);
+	if (size < dstlength)
+		return (size + srclength);
+	while (i < srclength + 1 && i + dstlength < size - 1)
+	{
+		dst[dstlength + i] = src[i];
+		i++;
+	}
+	dst[dstlength + i] = '\0';
+	return (dstlength + srclength);
+}
+
+
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
 	int		i;
 	char	*csrc;
 	char	*cdest;
+	size_t	len;
 
+	len = ft_strlen(csrc);
 	if (src == NULL && n != 0 && dest == 0)
 		return (NULL);
 	csrc = (char *) src;
@@ -120,6 +145,7 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 			cdest[i] = csrc[i];
 			i--;
 	}
+	cdest[len - (n - 1)] = '\0';
 	return (dest);
 }
 
@@ -140,11 +166,15 @@ char	*ft_realloc(char *str, int size)
 char	*ft_readandsearch(int fd, char *buffer, char *line)
 {
 	int		readstat;
-	size_t	*index;
+	size_t	index;
 
 	readstat = 1;
-	if (ft_strlen(buffer) == NULL) //maybe edit
+	index = 0;
+	if (buffer[0] == '\0') //maybe edit
+	{
 		readstat = read(fd, buffer, BUFFER_SIZE);
+		buffer[readstat] = '\0';
+	}
 
 	while (!ft_strchr(buffer, '\n') && readstat != 0)
 	{
@@ -154,18 +184,19 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 
 		if((index = ft_strchridx(buffer, '\n')))
 		{
-			ft_memmove(line + ft_strlen(line), buffer, size_t(index - buffer)); // copy until \n to line
-			ft_memmove(buffer, buffer + index, ft_strlen(buffer) - index);	//copy rest of buffer to the beginning of buffer
+			ft_memmove(line + ft_strlen(line), buffer, index + 1); // copy until \n to line
+			ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) - index);	//copy rest of buffer to the beginning of buffer
 		}
 }
 
 char	*get_next_line(int fd)
 {
-	char	buffer[BUFFER_SIZE];
+	char	buffer[BUFFER_SIZE + 1];
 	char	line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
+	buffer[0] = '\0';
 	ft_readandsearch(fd, buffer, &line);
 }
 
