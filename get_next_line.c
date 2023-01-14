@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/14 13:13:36 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/14 14:17:56 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,15 +120,12 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	return (dstlength + srclength);
 }
 
-
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
 	int		i;
 	char	*csrc;
 	char	*cdest;
-	size_t	len;
 
-	len = ft_strlen(csrc);
 	if (src == NULL && n != 0 && dest == 0)
 		return (NULL);
 	csrc = (char *) src;
@@ -145,7 +142,6 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 			cdest[i] = csrc[i];
 			i--;
 	}
-	cdest[len - (n - 1)] = '\0';
 	return (dest);
 }
 
@@ -184,8 +180,9 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 
 		if((index = ft_strchridx(buffer, '\n')))
 		{
-			ft_memmove(line + ft_strlen(line), buffer, index + 1); // copy until \n to line
-			ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) - index);	//copy rest of buffer to the beginning of buffer
+			ft_memmove((line + ft_strlen(line)), buffer, index + 1); // copy until \n to line
+			line[index + 1] = '\0';
+			ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) + 1 - index);	//copy rest of buffer to the beginning of buffer
 		}
 }
 
