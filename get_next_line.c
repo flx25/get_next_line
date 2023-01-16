@@ -65,13 +65,13 @@ char	*ft_strchr(char *c, int i)
 	return (NULL);
 }
 
-size_t	ft_strchridx(char *c, int i)
+int	ft_strchridx(char *c, int i)
 {
 	size_t	j;
 
 	j = 0;
 	if (!c)
-		return (0x0);
+		return (-1);
 	if (i == '\0')
 		return (ft_strlen(c));
 	while (c[j] != '\0')
@@ -80,7 +80,7 @@ size_t	ft_strchridx(char *c, int i)
 			return (j);
 		j++;
 	}
-	return (0x0);
+	return (-1);
 }
 
 int	ft_strcmp(char *s1, char *s2)
@@ -155,7 +155,7 @@ char	*ft_realloc(char *str, int size)
 
 	if (out == NULL)
 		return (NULL);
-	if (str[0] != '\0')
+	if (str != NULL)
 	{
 		ft_memmove(out, str, len);
 		out[len] = '\0';
@@ -167,28 +167,29 @@ char	*ft_realloc(char *str, int size)
 char	*ft_readandsearch(int fd, char *buffer, char *line)
 {
 	int		readstat;
-	size_t	index;
+	int		index;
+	int		readcount;
 
 	readstat = 1;
 	index = 0;
-	if (buffer[0] == '\0') //maybe edit
-	{
-		readstat = read(fd, buffer, BUFFER_SIZE);
-	}
-
+	readcount = 0;
 	while (!ft_strchr(buffer, '\n') && readstat != 0)
 	{
-		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 1);
-		ft_memmove(line + strlen(line), buffer, strlen(buffer));
+		line = ft_realloc(line, strlen(line) + BUFFER_SIZE);
 		readstat = read(fd, buffer, BUFFER_SIZE);
+		if (readstat == 0 && readcount == 0)
+		{
+			free(line);
+			return(NULL);
+		}
 		buffer[readstat] = '\0';
+		ft_memmove(line + strlen(line), buffer, strlen(buffer));
+		readcount++;
 	}
 	index = ft_strchridx(buffer, '\n');
-	if(index)
-	{
-		ft_memmove((line + ft_strlen(line)), buffer, index + 1); // copy until \n to line
+	if(index != -1)
 		ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) + 1 - index);	//copy rest of buffer to the beginning of buffer - how to not copy the 0 termi
-	}
+
 	return (line);
 }
 
@@ -197,7 +198,7 @@ char	*get_next_line(int fd)
 	static char	buffer[BUFFER_SIZE + 1];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (read(fd, NULL, 0) < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = malloc(BUFFER_SIZE * sizeof(char));
 
@@ -205,16 +206,16 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-// int	main(void)
-// {
-// 	int		fd_to_read;
-// 	char	*out;
+int	main(void)
+{
+	int		fd_to_read;
+	char	*out;
 
-// 	fd_to_read = open("testtext.txt", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
-// 	close(fd_to_read);
-// }
+	fd_to_read = open("41_no_nl", O_RDONLY);
+	out = get_next_line(fd_to_read);
+	printf("%s", out);
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	printf("%s", get_next_line(fd_to_read));
+	close(fd_to_read);
+}
