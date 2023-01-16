@@ -71,7 +71,7 @@ size_t	ft_strchridx(char *c, int i)
 
 	j = 0;
 	if (!c)
-		return (NULL);
+		return (0x0);
 	if (i == '\0')
 		return (ft_strlen(c));
 	while (c[j] != '\0')
@@ -80,7 +80,7 @@ size_t	ft_strchridx(char *c, int i)
 			return (j);
 		j++;
 	}
-	return (NULL);
+	return (0x0);
 }
 
 int	ft_strcmp(char *s1, char *s2)
@@ -148,14 +148,19 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 char	*ft_realloc(char *str, int size)
 {
 	char	*out;
+	int		len;
 
+	len = ft_strlen(str);
 	out = malloc(size * sizeof(char));
-	if (str != NULL)
+
+	if (out == NULL)
+		return (NULL);
+	if (str[0] != '\0')
 	{
-		ft_memmove(out, str, ft_strlen(str));
+		ft_memmove(out, str, len);
+		out[len] = '\0';
 		free(str);
 	}
-	out[ft_strlen(str)] = '\0';
 	return (out);
 }
 
@@ -169,44 +174,47 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 	if (buffer[0] == '\0') //maybe edit
 	{
 		readstat = read(fd, buffer, BUFFER_SIZE);
-		buffer[readstat] = '\0';
 	}
 
 	while (!ft_strchr(buffer, '\n') && readstat != 0)
 	{
-		line = ft_realloc(line, strlen(line + BUFFER_SIZE + 1));
+		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 1);
 		ft_memmove(line + strlen(line), buffer, strlen(buffer));
+		readstat = read(fd, buffer, BUFFER_SIZE);
+		buffer[readstat] = '\0';
 	}
-
-		if((index = ft_strchridx(buffer, '\n')))
-		{
-			ft_memmove((line + ft_strlen(line)), buffer, index + 1); // copy until \n to line
-			line[index + 1] = '\0';
-			ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) + 1 - index);	//copy rest of buffer to the beginning of buffer
-		}
+	index = ft_strchridx(buffer, '\n');
+	if(index)
+	{
+		ft_memmove((line + ft_strlen(line)), buffer, index + 1); // copy until \n to line
+		ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) + 1 - index);	//copy rest of buffer to the beginning of buffer - how to not copy the 0 termi
+	}
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	char	buffer[BUFFER_SIZE + 1];
-	char	line;
+	static char	buffer[BUFFER_SIZE + 1];
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer[0] = '\0';
-	ft_readandsearch(fd, buffer, &line);
+	line = malloc(BUFFER_SIZE * sizeof(char));
+
+	line = ft_readandsearch(fd, buffer, line);
+	return (line);
 }
 
-int	main(void)
-{
-	int		fd_to_read;
-	char	*out;
+// int	main(void)
+// {
+// 	int		fd_to_read;
+// 	char	*out;
 
-	fd_to_read = open("testtext.txt", O_RDONLY);
-	out = get_next_line(fd_to_read);
-	printf("%s", out);
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	close(fd_to_read);
-}
+// 	fd_to_read = open("testtext.txt", O_RDONLY);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	close(fd_to_read);
+// }
