@@ -98,6 +98,25 @@ int	ft_strcmp(char *s1, char *s2)
 	return ((unsigned char) s1[i] - (unsigned char) s2[i]);
 }
 
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	size_t			i;
+	unsigned char	*out;
+
+	if ((nmemb >= __SIZE_MAX__ && size >= __SIZE_MAX__))
+		return (NULL);
+	out = (unsigned char *) malloc(nmemb * size);
+	if (out == NULL)
+		return (NULL);
+	i = 0;
+	while (i < nmemb * size)
+	{
+		out[i] = 0;
+		i++;
+	}
+	return (out);
+}
+
 size_t	ft_strlcat(char *dst, const char *src, size_t size)
 {
 	size_t	srclength;
@@ -151,7 +170,7 @@ char	*ft_realloc(char *str, int size)
 	int		len;
 
 	len = ft_strlen(str);
-	out = malloc(size * sizeof(char));
+	out = ft_calloc(size, sizeof(char));
 
 	if (out == NULL)
 		return (NULL);
@@ -175,7 +194,7 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 	readcount = 0;
 	while (!ft_strchr(buffer, '\n') && readstat != 0)
 	{
-		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 1);
+		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 2);
 		readstat = read(fd, buffer, BUFFER_SIZE);
 		if (readstat == 0 && readcount == 0)
 			return (free(line), NULL);
