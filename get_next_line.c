@@ -175,13 +175,11 @@ char	*ft_readandsearch(int fd, char *buffer, char *line)
 	readcount = 0;
 	while (!ft_strchr(buffer, '\n') && readstat != 0)
 	{
-		line = ft_realloc(line, strlen(line) + BUFFER_SIZE);
+		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 1);
 		readstat = read(fd, buffer, BUFFER_SIZE);
 		if (readstat == 0 && readcount == 0)
-		{
-			free(line);
-			return(NULL);
-		}
+			return (free(line), NULL);
+
 		buffer[readstat] = '\0';
 		ft_memmove(line + strlen(line), buffer, strlen(buffer));
 		readcount++;
@@ -206,16 +204,16 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-int	main(void)
-{
-	int		fd_to_read;
-	char	*out;
+// int	main(void)
+// {
+// 	int		fd_to_read;
+// 	char	*out;
 
-	fd_to_read = open("41_no_nl", O_RDONLY);
-	out = get_next_line(fd_to_read);
-	printf("%s", out);
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	printf("%s", get_next_line(fd_to_read));
-	close(fd_to_read);
-}
+// 	fd_to_read = open("testtext.txt", O_RDONLY);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	printf("%s", get_next_line(fd_to_read));
+// 	close(fd_to_read);
+// }
