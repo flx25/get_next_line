@@ -17,25 +17,6 @@
 #include <unistd.h>
 #include <string.h>
 
-void	*ft_calloc(size_t nmemb, size_t size)
-{
-	size_t			i;
-	unsigned char	*out;
-
-	if ((nmemb >= __SIZE_MAX__ && size >= __SIZE_MAX__))
-		return (NULL);
-	out = (unsigned char *) malloc(nmemb * size);
-	if (out == NULL)
-		return (NULL);
-	i = 0;
-	while (i < nmemb * size)
-	{
-		out[i] = 0;
-		i++;
-	}
-	return (out);
-}
-
 int	ft_strlen(const char *str)
 {
 	int	i;
@@ -66,24 +47,6 @@ char	*ft_strchr(char *c, int i)
 		j++;
 	}
 	return (NULL);
-}
-
-int	ft_strchridx(char *c, int i)
-{
-	size_t	j;
-
-	j = 0;
-	if (!c)
-		return (-1);
-	if (i == '\0')
-		return (ft_strlen(c));
-	while (c[j] != '\0')
-	{
-		if (c[j] == (char) i)
-			return (j);
-		j++;
-	}
-	return (-1);
 }
 
 char	*ft_strjoin(char *str, char *buff)
