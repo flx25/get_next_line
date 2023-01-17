@@ -119,12 +119,10 @@ char	*readtostr(int fd, char *str)
 	char	*buff;
 	int		readstat;
 
-	readstat = 1;
-
 	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buff)
 		return (NULL);
-
+	readstat = 1;
 	while (!ft_strchr(str, '\n') && readstat != 0)
 	{
 		readstat = read(fd, buff, BUFFER_SIZE);
@@ -199,7 +197,7 @@ char	*get_next_line(int fd)
 	static char	*str;
 	char		*line;
 
-	if (read(fd, NULL, 0) < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 
 	str = readtostr(fd, str);
