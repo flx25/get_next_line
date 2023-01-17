@@ -17,20 +17,23 @@
 #include <unistd.h>
 #include <string.h>
 
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	unsigned char	*ps;
-	unsigned char	*pd;
+	size_t			i;
+	unsigned char	*out;
 
-	if (src == NULL && n != 0 && dest == 0)
+	if ((nmemb >= __SIZE_MAX__ && size >= __SIZE_MAX__))
 		return (NULL);
-	ps = (unsigned char *) src;
-	pd = dest;
-	while (n--)
+	out = (unsigned char *) malloc(nmemb * size);
+	if (out == NULL)
+		return (NULL);
+	i = 0;
+	while (i < nmemb * size)
 	{
-		*pd++ = (unsigned char) *ps++;
+		out[i] = 0;
+		i++;
 	}
-	return (dest);
+	return (out);
 }
 
 int	ft_strlen(const char *str)
@@ -83,145 +86,127 @@ int	ft_strchridx(char *c, int i)
 	return (-1);
 }
 
-int	ft_strcmp(char *s1, char *s2)
+char	*ft_strjoin(char *str, char *buff)
 {
-	int	i;
-
-	i = 0;
-	if (!s1 || !s2)
-		return (0);
-	while (s1[i] != '\0' && s2[i] != '\0'
-		&& s1[i] == s2[i])
-	{
-	i++;
-	}
-	return ((unsigned char) s1[i] - (unsigned char) s2[i]);
-}
-
-void	*ft_calloc(size_t nmemb, size_t size)
-{
-	size_t			i;
-	unsigned char	*out;
-
-	if ((nmemb >= __SIZE_MAX__ && size >= __SIZE_MAX__))
-		return (NULL);
-	out = (unsigned char *) malloc(nmemb * size);
-	if (out == NULL)
-		return (NULL);
-	i = 0;
-	while (i < nmemb * size)
-	{
-		out[i] = 0;
-		i++;
-	}
-	return (out);
-}
-
-size_t	ft_strlcat(char *dst, const char *src, size_t size)
-{
-	size_t	srclength;
 	size_t	i;
-	size_t	dstlength;
+	size_t	j;
+	char	*nstr;
 
-	srclength = ft_strlen(src);
-	dstlength = ft_strlen(dst);
-	i = 0;
-	if (size == 0)
-		return (srclength);
-	if (size < dstlength)
-		return (size + srclength);
-	while (i < srclength + 1 && i + dstlength < size - 1)
+	if (!str)
 	{
-		dst[dstlength + i] = src[i];
-		i++;
+		str = (char *)malloc(1 * sizeof(char));
+		str[0] = '\0';
 	}
-	dst[dstlength + i] = '\0';
-	return (dstlength + srclength);
-}
-
-void	*ft_memmove(void *dest, const void *src, size_t n)
-{
-	int		i;
-	char	*csrc;
-	char	*cdest;
-
-	if (src == NULL && n != 0 && dest == 0)
+	if (!str || !buff)
 		return (NULL);
-	csrc = (char *) src;
-	cdest = (char *) dest;
-	i = 0;
-	if (dest < src)
-	{
-		ft_memcpy(dest, src, n);
-		return (dest);
-	}
-		i = n - 1;
-	while (i >= 0)
-	{
-			cdest[i] = csrc[i];
-			i--;
-	}
-	return (dest);
-}
-
-char	*ft_realloc(char *str, int size)
-{
-	char	*out;
-	int		len;
-
-	len = ft_strlen(str);
-	out = ft_calloc(size, sizeof(char));
-
-	if (out == NULL)
+	nstr = malloc(sizeof(char) * ((ft_strlen(str) + ft_strlen(buff)) + 1));
+	if (nstr == NULL)
 		return (NULL);
-	if (str != NULL)
-	{
-		ft_memmove(out, str, len);
-		out[len] = '\0';
-		free(str);
-	}
-	return (out);
+	i = -1;
+	j = 0;
+	if (str)
+		while (str[++i] != '\0')
+			nstr[i] = str[i];
+	while (buff[j] != '\0')
+		nstr[i++] = buff[j++];
+	nstr[ft_strlen(str) + ft_strlen(buff)] = '\0';
+	free(str);
+	return (nstr);
 }
 
-char	*ft_readandsearch(int fd, char *buffer, char *line)
+char	*readtostr(int fd, char *str)
 {
-	int			readstat;
-	int			index;
-	static int	readcount;
+	char	*buff;
+	int		readstat;
 
 	readstat = 1;
-	index = 0;
-	while (!ft_strchr(buffer, '\n') && readstat != 0)
+
+	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buff)
+		return (NULL);
+
+	while (!ft_strchr(str, '\n') && readstat != 0)
 	{
-		line = ft_realloc(line, strlen(line) + BUFFER_SIZE + 2);
-		ft_memmove(line + strlen(line), buffer, strlen(buffer));
-		readstat = read(fd, buffer, BUFFER_SIZE);
-		buffer[readstat] = '\0';
-		if (readstat == 0 && readcount == 0)
-			return (free(line), NULL);
-		readcount++;
+		readstat = read(fd, buff, BUFFER_SIZE);
+		if (readstat == -1)
+		{
+			free(buff);
+			return (NULL);
+		}
+		buff[readstat] = '\0';
+		str = ft_strjoin(str, buff);
 	}
-	index = ft_strchridx(buffer, '\n');
-	if(index != -1)
+	free(buff);
+	return (str);
+}
+
+char	*ft_getline(char *str)
+{
+	int		i;
+	char	*nstr;
+
+	i = 0;
+	if (!str[i])
+		return (NULL);
+	while (str[i] && str[i] != '\n')
+		i++;
+	nstr = malloc((i + 2) * sizeof(char));
+	if (!nstr)
+		return (NULL);
+	i = 0;
+	while (str[i] && str[i] != '\n')
 	{
-		ft_memmove(line + strlen(line), buffer, index +1);
-		ft_memmove(buffer, buffer + index + 1, ft_strlen(buffer) - (index));//copy rest of buffer to the beginning of buffer - how to not copy the 0 termi
+		nstr[i] = str[i];
+		i++;
 	}
-	if (!line[0])
-		return (free(line), NULL);
-	return (line);
+	if (str[i] == '\n')
+	{
+		nstr[i] = str[i];
+		i++;
+	}
+	nstr[i] = '\0';
+	return (nstr);
+}
+
+char	*getnewstr(char *str)
+{
+	int		i;
+	int		j;
+	char	*nstr;
+
+	i = 0;
+	while (str[i] && str[i] != '\n')
+		i++;
+	if (!str[i])
+	{
+		free(str);
+		return (NULL);
+	}
+	nstr = malloc((ft_strlen(str) - i + 1) * sizeof(char));
+	if (!nstr)
+		return (NULL);
+	i++;
+	j = 0;
+	while (str[i])
+		nstr[j++] = str[i++];
+	nstr[j] = '\0';
+	free(str);
+	return (nstr);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
+	static char	*str;
 	char		*line;
 
 	if (read(fd, NULL, 0) < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = malloc(BUFFER_SIZE * sizeof(char));
 
-	line = ft_readandsearch(fd, buffer, line);
+	str = readtostr(fd, str);
+	if (!str)
+		return (NULL);
+	line = ft_getline(str);
+	str = getnewstr(str);
 	return (line);
 }
 
@@ -231,10 +216,6 @@ char	*get_next_line(int fd)
 // 	char	*out;
 
 // 	fd_to_read = open("41_with_nl", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	printf("%s", get_next_line(fd_to_read));
-// 	printf("%s", get_next_line(fd_to_read));
 // 	printf("%s", get_next_line(fd_to_read));
 // 	close(fd_to_read);
 // }
