@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/14 14:17:56 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/18 13:33:55 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ char	*readtostr(int fd, char *str)
 		if (readstat == -1)
 		{
 			free(buff);
+			free(str);
 			return (NULL);
 		}
 		buff[readstat] = '\0';

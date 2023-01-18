@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 12:56:31 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/18 13:00:54 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/18 13:35:03 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ char	*readtostr(int fd, char *str)
 		if (readstat == -1)
 		{
 			free(buff);
+			free(str);
 			return (NULL);
 		}
 		buff[readstat] = '\0';
@@ -99,16 +100,16 @@ char	*getnewstr(char *str)
 
 char	*get_next_line(int fd)
 {
-	static char	*str;
+	static char	*str[1024];
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	str = readtostr(fd, str);
-	if (!str)
+	str[fd] = readtostr(fd, str[fd]);
+	if (!str[fd])
 		return (NULL);
-	line = ft_getline(str);
-	str = getnewstr(str);
+	line = ft_getline(str[fd]);
+	str[fd] = getnewstr(str[fd]);
 	return (line);
 }
 
