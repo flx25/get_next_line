@@ -152,6 +152,8 @@ char	*getnewstr(char *str)
 		nstr[j++] = str[i++];
 	nstr[j] = '\0';
 	free(str);
+	if (nstr[0] == '\0')
+		return (free(nstr), NULL);
 	return (nstr);
 }
 
@@ -176,7 +178,22 @@ char	*get_next_line(int fd)
 // 	int		fd_to_read;
 // 	char	*out;
 
-// 	fd_to_read = open("41_with_nl", O_RDONLY);
-// 	printf("%s", get_next_line(fd_to_read));
+// 	fd_to_read = open("read_error.txt", O_RDONLY);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	free(out);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	free(out);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	free(out);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	free(out);
+// 	out = get_next_line(fd_to_read);
+// 	printf("%s", out);
+// 	free(out);
+
 // 	close(fd_to_read);
 // }
