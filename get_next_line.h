@@ -18,9 +18,8 @@
 # endif
 
 char	*get_next_line(int fd);
-// int		ft_strlen(const char *str);
-// char	*ft_strjoin(char const *s1, char const *s2);
-// char	*transfer(char *out, int *pi, int transfersize, int readnull);
-// int		checknl(char *out, int i, int *ptransfersize);
+int		ft_strlen(const char *str);
+char	*ft_strjoin(char *str, char *buff);
+char	*ft_strchr(char *c, int i);
 
 #endif
