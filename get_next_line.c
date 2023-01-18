@@ -6,7 +6,7 @@
 /*   By: fvon-nag <fvon-nag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/06 09:47:32 by fvon-nag          #+#    #+#             */
-/*   Updated: 2023/01/18 13:33:55 by fvon-nag         ###   ########.fr       */
+/*   Updated: 2023/01/18 14:52:46 by fvon-nag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,27 +112,3 @@ char	*get_next_line(int fd)
 	str = getnewstr(str);
 	return (line);
 }
-
-// int	main(void)
-// {
-// 	int		fd_to_read;
-// 	char	*out;
-// 	fd_to_read = open("read_error.txt", O_RDONLY);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	free(out);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	free(out);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	free(out);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	free(out);
-// 	out = get_next_line(fd_to_read);
-// 	printf("%s", out);
-// 	free(out);
-
-// 	close(fd_to_read);
-// }
